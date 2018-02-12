@@ -118,4 +118,31 @@ class AppDataTest extends \Test\TestCase {
 		$this->assertInstanceOf(ISimpleFolder::class, $result[0]);
 	}
 
+	public function testNewFolderInvalidAppData() {
+		$folders = $this->setupAppFolder();
+		$appData = $folders[0];
+		$appFolder = $folders[1];
+
+		$folder = $this->createMock(Folder::class);
+
+		$appFolder->expects($this->once())
+			->method('delete');
+		$appFolder->method('stat')
+			->willReturn(false);
+		$appFolder->method('getParent')
+			->willReturn($appData);
+		$appData->expects($this->once())
+			->method('delete');
+		$appData->method('stat')
+			->willReturn(false);
+
+		$appFolder->expects($this->once())
+			->method('newFolder')
+			->with($this->equalTo('folder'))
+			->willReturn($folder);
+
+		$result = $this->appData->newFolder('folder');
+		$this->assertInstanceOf(ISimpleFolder::class, $result);
+	}
+
 }

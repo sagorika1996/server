@@ -27,6 +27,7 @@ use OCP\Files\File;
 use OCP\Files\Folder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
+use OCP\Files\NotPermittedException;
 use OCP\Files\SimpleFS\ISimpleFile;
 
 class SimpleFolderTest extends \Test\TestCase  {
@@ -133,6 +134,23 @@ class SimpleFolderTest extends \Test\TestCase  {
 
 		$this->assertCount(1, $result);
 		$this->assertInstanceOf(ISimpleFile::class, $result[0]);
+	}
+
+	public function testNewFileInvalidAppData() {
+		$this->folder->method('stat')->willReturn(false);
+
+		$parent = $this->createMock(Folder::class);
+		$parent->method('stat')->willReturn(false);
+
+		$root = $this->createMock(Folder::class);
+		$root->method('stat')->willReturn([]);
+
+		$this->folder->method('getParent')->willReturn($parent);
+		$parent->method('getParent')->willReturn($root);
+
+		$this->expectException(NotPermittedException::class);
+
+		$this->simpleFolder->newFile('new');
 	}
 
 }
