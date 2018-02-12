@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * @copyright 2016 Roeland Jago Douma <roeland@famdouma.nl>
  *
@@ -55,7 +56,7 @@ class AppData implements IAppData {
 	 */
 	public function __construct(IRootFolder $rootFolder,
 								SystemConfig $systemConfig,
-								$appId) {
+								string $appId) {
 
 		$this->rootFolder = $rootFolder;
 		$this->config = $systemConfig;
@@ -66,7 +67,7 @@ class AppData implements IAppData {
 	 * @return Folder
 	 * @throws \RuntimeException
 	 */
-	private function getAppDataFolder() {
+	private function getAppDataFolder(): Folder {
 		if ($this->folder === null) {
 			$instanceId = $this->config->getValue('instanceid', null);
 			if ($instanceId === null) {
@@ -109,7 +110,20 @@ class AppData implements IAppData {
 	}
 
 	public function newFolder($name) {
-		$folder = $this->getAppDataFolder()->newFolder($name);
+		// Check if the appdata folder is actually a valid folder
+		$appFolder = $this->getAppDataFolder();
+		if ($appFolder->stat() === false) {
+			$appData = $appFolder->getParent();
+			$appFolder->delete();
+
+			if ($appData->stat() === false) {
+				$appData->delete();
+			}
+
+			$appFolder = $this->getAppDataFolder();
+		}
+
+		$folder = $appFolder->newFolder($name);
 
 		return new SimpleFolder($folder);
 	}
