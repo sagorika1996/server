@@ -26,6 +26,7 @@ use OCP\Files\File;
 use OCP\Files\Folder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
+use OCP\Files\NotPermittedException;
 use OCP\Files\SimpleFS\ISimpleFolder;
 
 class SimpleFolder implements ISimpleFolder   {
@@ -80,6 +81,21 @@ class SimpleFolder implements ISimpleFolder   {
 	}
 
 	public function newFile($name) {
+		$stat = $this->folder->stat();
+
+		if ($stat === false) {
+			$this->folder->delete();
+
+			$parent = $this->folder->getParent();
+			while($parent->stat() === false) {
+				$tmp = $parent;
+				$parent = $parent->getParent();
+				$tmp->delete();
+			}
+
+			throw new NotPermittedException('Can\'t create file because folder does not exist!');
+		}
+
 		$file = $this->folder->newFile($name);
 
 		return new SimpleFile($file);
