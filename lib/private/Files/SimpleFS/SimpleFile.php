@@ -79,23 +79,12 @@ class SimpleFile implements ISimpleFile  {
 	/**
 	 * Get the content
 	 *
+	 * @throws NotPermittedException
 	 * @return string
 	 */
 	public function getContent() {
-		$res = $this->file->getContent();
-
-		if ($res === false) {
-			$this->file->delete();
-
-			$parent = $this->file->getParent();
-			while($parent->stat() === false) {
-				$tmp = $parent;
-				$parent = $parent->getParent();
-				$tmp->delete();
-			}
-		}
-
-		return $res;
+		$this->checkFile();
+		return $this->file->getContent();
 	}
 
 	/**
@@ -105,8 +94,27 @@ class SimpleFile implements ISimpleFile  {
 	 * @throws NotPermittedException
 	 */
 	public function putContent($data) {
+		$this->checkFile();
 		$this->file->putContent($data);
 	}
+
+	/**
+	 * @throws NotPermittedException
+	 */
+	private function checkFile() {
+		$cur = $this->file;
+
+		while ($cur->stat() === false) {
+			$parent = $cur->getParent();
+			$cur->delete();
+			$cur = $parent;
+		}
+
+		if ($cur !== $this->file) {
+			throw new NotPermittedException('File does not exist');
+		}
+	}
+
 
 	/**
 	 * Delete the file

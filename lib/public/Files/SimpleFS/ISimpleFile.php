@@ -67,6 +67,7 @@ interface ISimpleFile {
 	/**
 	 * Get the content
 	 *
+	 * @throws NotPermittedException
 	 * @return string
 	 * @since 11.0.0
 	 */
