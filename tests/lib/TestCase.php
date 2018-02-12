@@ -307,7 +307,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase {
 
 		if ($dh = opendir($dataDir)) {
 			while (($file = readdir($dh)) !== false) {
-				if (!isset($knownEntries[$file])) {
+				if (!isset($knownEntries[$file]) && !(strpos($file, 'appdata_') === 0)) {
 					self::tearDownAfterClassCleanStrayDataUnlinkDir($dataDir . '/' . $file);
 				}
 			}
