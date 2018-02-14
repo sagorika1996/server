@@ -629,10 +629,8 @@ pipeline:
       matrix:
         TEST: memcache-redis-cluster
   acceptance-ui:
-    image: nextcloudci/php7.0:php7.0-19
+    image: alekzonder/puppeteer:1.0.0-2
     commands:
-      - curl -sL https://deb.nodesource.com/setup_9.x | bash -
-      - apt-get install -y nodejs
       - cd tests/ui-regression
       - npm install
       - ./run-tests.sh
