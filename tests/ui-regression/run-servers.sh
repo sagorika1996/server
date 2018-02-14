@@ -6,8 +6,8 @@
 pkill -9 php
 
 cleaninstall() {
-    rm -r data/*
-    rm config/config.php
+    rm -fr data/*
+    rm -f config/config.php
 }
 BASEBRANCH=master
 BASEPATH=/tmp/base
@@ -25,8 +25,7 @@ REPOPATH=`realpath ../../`
     cd $REPOPATH
     git submodule update --init
     cleaninstall
-    php -S 0.0.0.0:8081 &
+    php -S 0.0.0.0:8081
 )
-
 
 
