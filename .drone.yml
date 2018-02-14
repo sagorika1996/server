@@ -631,7 +631,10 @@ pipeline:
   acceptance-ui:
     image: nextcloudci/integration-php7.0:integration-php7.0-6
     commands:
+      - apt-get update && apt-get install -y nodejs npm
+      - ln -s /usr/bin/nodejs /usr/bin/node
       - cd tests/ui-regression
+      - npm install
       - ./run-servers.sh
       - ./run-tests.sh
     when:
