@@ -629,17 +629,15 @@ pipeline:
       matrix:
         TEST: memcache-redis-cluster
   acceptance-ui:
-    image: nextcloudci/integration-php7.0:integration-php7.0-6
+    image: nextcloudci/jsunit:jsunit-5
     commands:
-      - apt-get update && apt-get install -y nodejs npm
-      - ln -s /usr/bin/nodejs /usr/bin/node
       - cd tests/ui-regression
       - npm install
       - ./run-servers.sh
-      - ./run-tests.sh
     when:
       matrix:
         TESTS: acceptance-ui
+
 matrix:
   include:
     - TESTS: acceptance-ui
@@ -650,6 +648,14 @@ services:
     when:
       matrix:
        ENABLE_REDIS: true
+  acceptance-ui-php:
+    image: nextcloudci/php7.0:php7.0-19
+    commands:
+      - cd tests/ui-regression
+      - ./run-servers.sh
+    when:
+      matrix:
+        TESTS: acceptance-ui
   cache-cluster:
     image: morrisjobke/redis-cluster
     when:
