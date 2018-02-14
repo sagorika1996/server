@@ -629,11 +629,13 @@ pipeline:
       matrix:
         TEST: memcache-redis-cluster
   acceptance-ui:
-    image: nextcloudci/jsunit:jsunit-5
+    image: nextcloudci/php7.0:php7.0-19
     commands:
+      - curl -sL https://deb.nodesource.com/setup_9.x | bash -
+      - apt-get install -y nodejs
       - cd tests/ui-regression
       - npm install
-      - ./run-servers.sh
+      - ./run-tests.sh
     when:
       matrix:
         TESTS: acceptance-ui

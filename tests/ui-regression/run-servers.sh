@@ -1,6 +1,5 @@
 #!/bin/bash
 
-export PATH=node_modules/.bin:$PATH
 #trap "killall php" SIGINT
 #trap "killall php" EXIT
 
@@ -11,23 +10,23 @@ cleaninstall() {
     rm config/config.php
 }
 BASEBRANCH=master
-[ ! -d $ORIGINPATH ] && git worktree add $ORIGINPATH $BASEBRANCH
+BASEPATH=/tmp/base
+REPOPATH=`realpath ../../`
+[ ! -d $BASEPATH ] && mkdir -p $BASEPATH
 
 (
-    cd $ORIGINPATH
-    git submodule update --init
+    git clone --recursive https://github.com/nextcloud/server.git $BASEPATH
+    cd $BASEPATH
     cleaninstall
-    php -S 0.0.0.0:8080 & 2>&1 > base.log
+    php -S 0.0.0.0:8080 & 
 )
 
 (
     cd $REPOPATH
     git submodule update --init
     cleaninstall
-    php -S 0.0.0.0:8081 & 2>&1 > change.log
+    php -S 0.0.0.0:8081 &
 )
 
 
-#./node_modules/.bin/mocha test/installSpec.js --timeout 10000
-#./node_modules/.bin/mocha test/loginSpec.js --timeout 10000
 
